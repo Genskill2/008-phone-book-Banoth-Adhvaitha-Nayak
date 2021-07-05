@@ -69,7 +69,7 @@ int main(int argc, char *argv[]) {
       exit(1);
     }
     FILE *fp=open_db_file();
-    ar *name = argv[2];
+    char *name = argv[2];
     if (!search(fp, name))
     {
       printf("no match\n");
@@ -205,7 +205,7 @@ void add(char *name, char *phone) {
   fclose(fp);
 }
 
-void list(FILE *db_file) {
+int search(FILE *db_file,char *name){
   entry *p = load_entries(db_file);
   entry *base = p;
   int found=0;
