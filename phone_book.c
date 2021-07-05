@@ -69,8 +69,9 @@ int main(int argc, char *argv[]) {
       exit(1);
     }
     FILE *fp=open_db_file();
-    int num=search(fp,argv[2]);
-    if(num==0){
+    ar *name = argv[2];
+    if (!search(fp, name))
+    {
       printf("no match\n");
       fclose(fp);
       exit(1);
@@ -110,14 +111,19 @@ FILE *open_db_file() {
   
 void free_entries(entry *p) {
   /* TBD */
-  entry *temp=p;
+  /*entry *temp=p;
   entry *tmp_nxt;
   while(temp!=NULL){
     tmp_nxt=temp->next;
     free(temp);
     temp=tmp_nxt;
-  }
-  return;
+  }*/
+  while(p!=NULL){
+  free(p);
+  p =p->next;
+ }
+  
+  
   //printf("Memory is not being freed. This needs to be fixed!\n");  
 }
 
@@ -202,18 +208,39 @@ void add(char *name, char *phone) {
 void list(FILE *db_file) {
   entry *p = load_entries(db_file);
   entry *base = p;
-  count=0;
+  int found=0;
   while (p!=NULL) {
-  count++;
+   if(strcmp(p->name,name) == 0){
+  printf("%s\n",p->phone);
+ 
+  found = 1;
+  }
+   p=p->next;
+  }
+  free_entries(base);
+  return found;
+}
+
+int size = 0;
+void list(FILE *db_file) {
+  entry *p = load_entries(db_file);
+  entry *base = p;
+  int num = 0;
+  while (p!=NULL) {
     printf("%-20s : %10s\n", p->name, p->phone);
+    num++;
     p=p->next;
   }
   /* TBD print total count */
-  printf("Total entries : %d\n",count);
-  
+  size =num;
+  printf("Total entries :  %d\n",num);
   free_entries(base);
+ 
 }
-int search(FILE *db_f,char *name){
+  
+
+
+/*int search(FILE *db_f,char *name){
   entry *p=load_entries(db_f);
   entry *base=p;
   while(p!=NULL){
@@ -227,7 +254,7 @@ int search(FILE *db_f,char *name){
   }
   free_entries(base);
   return 0;
-}
+}*/
 
 
 int delete(FILE *db_file, char *name) {
@@ -250,22 +277,23 @@ int delete(FILE *db_file, char *name) {
       */
 
       /* TBD */
-       if(p==base){
-        base=p->next;
-        free(p);
-        deleted=1;
-      }
-      else{
-        prev->next=p->next;
-        free(p);
-        p=prev->next;
-        deleted=1;
-        continue;
-      }
+      
+       if(strcmp(base->name, name) == 0){
+         base = p->next;
+       }
+      else{ p = p->next;
+      
+       prev->next = p;
+          }
+      
+       deleted = 1;
+       break;
     }
+    else
+    {
     prev=p;
     p=p->next;
-    
+    }
   }
   write_all_entries(base);
   free_entries(base);
